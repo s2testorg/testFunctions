@@ -1,0 +1,21 @@
+name: Automation
+on:
+  repository_dispatch:
+    types: [auto]
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: Call handler
+        run: node ./.github/workflows/handler.js "$INPUTS"
+        env:
+          INPUTS: ${{ toJson(github.event.client_payload) }}
+        
